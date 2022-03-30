@@ -1,5 +1,5 @@
 theme = "harbor"
-baseurl = "https://example.com/"
+baseurl = "https://blog.thanni.work"
 title = "Thanni"
 paginate = 3
 languageCode = "en"
