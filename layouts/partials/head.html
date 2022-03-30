@@ -1,40 +1,84 @@
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">    
-<meta name="viewport" content="width=device-width,minimum-scale=1">
-<meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{if .IsPage}}{{ .Summary }}{{ else }}{{ with .Site.Params.description }}{{ . }}{{ end }}{{ end }}{{ end }}">
-{{ hugo.Generator }}
-{{/* NOTE: For Production make sure you add `HUGO_ENV="production"` before your build command */}}
-{{ if eq (getenv "HUGO_ENV") "production" | or (eq .Site.Params.env "production")  }}
-  <META NAME="ROBOTS" CONTENT="INDEX, FOLLOW">
-{{ else }}
-  <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+<meta charset="utf-8" />
+<title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }}{{ end }}</title>
+<meta name="description" 
+      content="{{ if .Params.Description }}
+                 {{- .Params.Description -}}
+               {{else if .Site.Params.Description}}
+                 {{- .Site.Params.Description -}}
+               {{ end }}"
+>
+{{- with .Site.Author.Name }}
+  <meta name="author" content="{{ . }}" />
+{{- end }}
+{{ partial "analytics.html" . }}
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  href="{{ .Site.BaseURL }}index.xml"
+  title="{{ .Site.Title }}"
+/>
+{{ template "_internal/twitter_cards.html" . }}
+{{ if isset .Site.Taxonomies "series" }}
+  {{ template "_internal/opengraph.html" . }}
 {{ end }}
+<!-- Stylesheets -->
+<link rel="stylesheet" href="{{ .Site.BaseURL }}fontawesome/css/all.min.css" />
 
-<link rel="stylesheet" href="{{ "/css/style.css" | relURL }}">
+{{ $main := resources.Get "css/main.css" }}
+{{ $syntax := resources.Get "css/syntax.css" }}
+{{ $styles := (slice $main $syntax) | resources.Concat "css/styles.css" | minify }}
+<link
+  crossorigin="anonymous"
+  href="{{ $styles.RelPermalink }}"
+  integrity="{{ $styles.Data.Integrity }}"
+  rel="preload stylesheet"
+  as="style"
+/>
 
 {{ range .Site.Params.customCSS }}
-  {{ if ( or ( hasPrefix . "http://" ) ( hasPrefix . "https://" ) ) }}
-    <!-- remote css -->
-    <link rel="stylesheet" href="{{ . }}">
-  {{ else }}
-    <!-- local css -->
-    <link rel="stylesheet" href="{{ $.Site.BaseURL }}{{ . }}">
-  {{ end }}
+  <link rel="stylesheet" href="{{ . | absURL }}" />
 {{ end }}
 
-<link rel="shortcut icon" href="{{ "/images/favicon.ico" | relURL }}" type="image/x-icon" />
+{{ $dark := resources.Get "css/dark.css" | minify }}
+<link
+  id="dark-mode-theme"
+  crossorigin="anonymous"
+  href="{{ $dark.RelPermalink }}"
+  integrity="{{ $dark.Data.Integrity }}"
+  rel="preload stylesheet"
+  as="style"
+/>
 
-{{ if .Site.Params.enableGoogleAnalytics }} 
-    {{ template "_internal/google_analytics_async.html" . }}
-{{ end }}
+<!-- Load theme mode from browser cache -->
+<script>
+  var darkTheme = document.getElementById('dark-mode-theme')
+  var storedTheme = localStorage.getItem('dark-mode-storage')
 
-{{ if or .Params.math .Site.Params.math }}
-  {{ partial "math.html" . }}
-{{ end }}
+  if (storedTheme === 'dark') {
+    darkTheme.disabled = false
+  } else if (storedTheme === 'light') {
+    darkTheme.disabled = true
+  }
+</script>
+<!-- script -->
+{{ $theme := resources.Get "js/theme.js" }}
+<script defer crossorigin="anonymous" src="{{ $theme.RelPermalink }}" integrity="{{ $theme.Data.Integrity }}"></script>
 
-{{ if .OutputFormats.Get "RSS" }}
-  {{ with .OutputFormats.Get "RSS" }}
-    <link href="{{ .RelPermalink }}" rel="alternate" type="application/rss+xml" title="{{ $.Site.Title }}" />
-    <link href="{{ .RelPermalink }}" rel="feed" type="application/rss+xml" title="{{ $.Site.Title }}" />
-  {{ end }}
-{{ end }}
+{{ $instantpage := resources.Get "js/instantpage.min.js" }}
+<script defer crossorigin="anonymous" src="{{ $instantpage.RelPermalink }}" integrity="{{ $instantpage.Data.Integrity }}"></script>
+
+{{- if (eq .Layout `search`) -}}
+  {{ $flexsearch := resources.Get "js/flexsearch.bundle.js" }}
+  <script defer crossorigin="anonymous" src="{{ $flexsearch.RelPermalink }}" integrity="{{ $flexsearch.Data.Integrity }}"></script>
+
+  {{ $mark := resources.Get "js/mark.min.js" }}
+  {{ $basesearch := resources.Get "js/search.js" }}
+
+  {{ $searchJSFile := printf "js/%s.search.js" .Language.Lang }}
+  {{ $search := (slice $mark $basesearch) | resources.Concat "js/search.js" | resources.ExecuteAsTemplate $searchJSFile . | resources.Fingerprint }}
+  <script defer crossorigin="anonymous" src="{{ $search.RelPermalink }}" integrity="{{ $search.Data.Integrity }}"></script>
+{{- end -}}
+
+{{ hugo.Generator -}}
