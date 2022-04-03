@@ -41,18 +41,11 @@ googleAnalytics = "UA-XXXXXXXX-XX"
   weight = 3
 
 [[params.nav]]
-  identifier = "tags"
-  name = "Tags"
+  identifier = "contact"
+  name = "Contact"
   icon = "fas fa-envelope fa-lg"
-  url = "mailto:hello@thanni.work"
+  url = "/contact/"
   weight = 3
-
-# [[params.nav]]
-#   identifier = "about"
-#   name = "About"
-#   icon = "fas fa-user fa-lg"
-#   url = "/about/"
-#   weight = 3
 
 # [[params.nav]]
 #   identifier = "search"
