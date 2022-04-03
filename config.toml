@@ -1,6 +1,6 @@
 theme = "harbor"
 baseurl = "https://blog.thanni.work/"
-title = "Thanni"
+title = "Thanni - UX/Technical Writer"
 paginate = 3
 languageCode = "en"
 DefaultContentLanguage = "en"
@@ -38,6 +38,13 @@ googleAnalytics = "UA-XXXXXXXX-XX"
   name = "Tags"
   icon = "fas fa-tag fa-lg"
   url = "tags"
+  weight = 3
+
+[[params.nav]]
+  identifier = "tags"
+  name = "Tags"
+  icon = "fas fa-envelope fa-lg"
+  url = "mailto:hello@thanni.work"
   weight = 3
 
 # [[params.nav]]
