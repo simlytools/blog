@@ -550,6 +550,11 @@ footer em {
     margin: 0 0 0 30px;
   }
 
+  .post-title {
+  font-size: 22px;
+  font-weight: 500;
+  }
+
   .container[role=main] {
     font-size: 16px;
     line-height: 1.8;
